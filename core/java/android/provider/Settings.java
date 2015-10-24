@@ -5405,6 +5405,12 @@ public final class Settings {
         public static final String LOCKSCREEN_MEDIA_BLUR = "lockscreen_media_blur";
 
         /**
+         * media artwork wallpaper blur level on lockscreen
+         * @hide
+         */
+        public static final String SHOW_LOCKSCREEN_MEDIA_ART = "show_lockscreen_media_art";
+
+        /**
          * These are all public system settings
          *
          * @hide
