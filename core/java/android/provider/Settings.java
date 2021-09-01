@@ -5411,6 +5411,24 @@ public final class Settings {
         public static final String SHOW_LOCKSCREEN_MEDIA_ART = "show_lockscreen_media_art";
 
         /**
+         * Optimized charging enabled
+         * @hide
+         */
+        public static final String OPTIMIZED_CHARGE_ENABLED = "optimized_charge_enabled";
+
+        /**
+         * Optimized charging ceiling
+         * @hide
+         */
+        public static final String OPTIMIZED_CHARGE_CEILING = "optimized_charge_ceiling";
+
+        /**
+         * Optimized charging floor
+         * @hide
+         */
+        public static final String OPTIMIZED_CHARGE_FLOOR = "optimized_charge_floor";
+
+        /**
          * These are all public system settings
          *
          * @hide
@@ -5541,6 +5559,9 @@ public final class Settings {
             PRIVATE_SETTINGS.add(CAMERA_LAUNCH);
             PRIVATE_SETTINGS.add(TOUCHSCREEN_GESTURE_HAPTIC_FEEDBACK);
             PRIVATE_SETTINGS.add(HIGH_TOUCH_SENSITIVITY_ENABLE);
+            PRIVATE_SETTINGS.add(OPTIMIZED_CHARGE_ENABLED);
+            PRIVATE_SETTINGS.add(OPTIMIZED_CHARGE_CEILING);
+            PRIVATE_SETTINGS.add(OPTIMIZED_CHARGE_FLOOR);
         }
 
         /**
