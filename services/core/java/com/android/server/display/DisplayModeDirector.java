@@ -2292,6 +2292,7 @@ public class DisplayModeDirector {
     public static class HbmObserver implements DisplayManager.DisplayListener {
         private final BallotBox mBallotBox;
         private final Handler mHandler;
+
         private final SparseIntArray mHbmMode = new SparseIntArray();
         private final SparseBooleanArray mHbmActive = new SparseBooleanArray();
         private final Injector mInjector;
@@ -2426,10 +2427,6 @@ public class DisplayModeDirector {
                     Slog.w(TAG, "Unexpected HBM mode " + hbmMode + " for display ID " + displayId);
                 }
 
-            }
-            if (hbmMode == BrightnessInfo.HIGH_BRIGHTNESS_MODE_HDR
-                    && mRefreshRateInHbmHdr > 0) {
-                vote = Vote.forRefreshRates(mRefreshRateInHbmHdr, mRefreshRateInHbmHdr);
             }
             mBallotBox.vote(displayId, Vote.PRIORITY_HIGH_BRIGHTNESS_MODE, vote);
         }
