@@ -752,11 +752,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mIsLongPress = true;
                     break;
                case MSG_DISPATCH_VOLKEY_WITH_WAKE_LOCK: {
-                    KeyEvent event = (KeyEvent) msg.obj;
+                    KeyEvent volevent = (KeyEvent) msg.obj;
                     mVolBtnLongPress = true;
-                    dispatchMediaKeyWithWakeLockToAudioService(event);
+                    dispatchMediaKeyWithWakeLockToAudioService(volevent);
                     dispatchMediaKeyWithWakeLockToAudioService(
-                            KeyEvent.changeAction(event, KeyEvent.ACTION_UP));
+                            KeyEvent.changeAction(volevent, KeyEvent.ACTION_UP));
                     break;
                 }
             }
