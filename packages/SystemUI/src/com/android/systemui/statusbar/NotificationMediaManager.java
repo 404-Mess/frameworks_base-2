@@ -41,6 +41,7 @@ import android.os.UserHandle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.NotificationStats;
 import android.service.notification.StatusBarNotification;
+import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
@@ -128,6 +129,9 @@ public class NotificationMediaManager implements Dumpable {
     private LockscreenWallpaper mLockscreenWallpaper;
 
     private final DelayableExecutor mMainExecutor;
+
+    private float mLockscreenMediaBlur;
+    private boolean mShowLockscreenMediaArt;
 
     private final Context mContext;
     private final MediaSessionManager mMediaSessionManager;
@@ -647,7 +651,7 @@ public class NotificationMediaManager implements Dumpable {
         }
 
         Bitmap artworkBitmap = null;
-        if (mediaMetadata != null && !mKeyguardBypassController.getBypassEnabled()) {
+        if (mShowLockscreenMediaArt && mediaMetadata != null && !mKeyguardBypassController.getBypassEnabled()) {
             artworkBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ART);
             if (artworkBitmap == null) {
                 artworkBitmap = mediaMetadata.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
@@ -662,7 +666,7 @@ public class NotificationMediaManager implements Dumpable {
             }
             mProcessArtworkTasks.clear();
         }
-        if (artworkBitmap != null && !Utils.useQsMediaPlayer(mContext)) {
+        if (artworkBitmap != null) {
             mProcessArtworkTasks.add(new ProcessArtworkTask(this, metaDataChanged,
                     allowEnterAnimation).execute(artworkBitmap));
         } else {
@@ -837,7 +841,19 @@ public class NotificationMediaManager implements Dumpable {
     };
 
     private Bitmap processArtwork(Bitmap artwork) {
-        return mMediaArtworkProcessor.processArtwork(mContext, artwork);
+        return mMediaArtworkProcessor.processArtwork(mContext, artwork, mLockscreenMediaBlur);
+    }
+
+    public void setLockScreenMediaBlurLevel() {
+        mLockscreenMediaBlur = (float) Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_MEDIA_BLUR, 25,
+                UserHandle.USER_CURRENT);
+    }
+
+    public void setLockScreenMediaArt() {
+        mShowLockscreenMediaArt = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SHOW_LOCKSCREEN_MEDIA_ART, 1,
+                UserHandle.USER_CURRENT) == 1;
     }
 
     @MainThread
