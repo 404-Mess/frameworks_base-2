@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ink.kaleidoscope.server;
+package com.android.server.custom;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
@@ -44,9 +44,9 @@ import java.lang.String;
 import java.lang.Thread;
 import java.util.NoSuchElementException;
 
-import ink.kaleidoscope.hardware.IOptimizedCharge;
+import com.android.internal.custom.hardware.IOptimizedCharge;
 
-import vendor.kscope.chgctrl.V1_0.IChargeControl;
+import vendor.lineage.chgctrl.V1_0.IChargeControl;
 
 public final class OptimizedChargeService extends SystemService {
 
