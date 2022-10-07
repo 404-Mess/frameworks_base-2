@@ -15,9 +15,7 @@
  */
 package com.android.internal.util.custom;
 
-import android.app.Application;
 import android.os.Build;
-import android.os.SystemProperties;
 import android.util.Log;
 
 import java.lang.reflect.Field;
@@ -30,7 +28,6 @@ import java.util.Map;
 public class PixelPropsUtils {
 
     public static final String PACKAGE_GMS = "com.google.android.gms";
-    private static final String DEVICE = "org.pixelexperience.device";
     private static final String TAG = PixelPropsUtils.class.getSimpleName();
     private static final boolean DEBUG = false;
 
@@ -38,13 +35,8 @@ public class PixelPropsUtils {
 
     private static final Map<String, Object> propsToChangePixel5;
     private static final String[] packagesToChangePixel5 = {
-            "com.google.android.apps.photos",
-            "com.google.android.apps.turbo",
-            "com.google.android.apps.turboadapter",
-            "com.google.android.dialer",
-            "com.google.android.googlequicksearchbox",
             "com.google.android.tts",
-            "com.google.audio.hearing.visualization.accessibility.scribe"
+            "com.google.android.apps.recorder"
     };
 
     private static final Map<String, Object> propsToChangePixelXL;
@@ -59,36 +51,6 @@ public class PixelPropsUtils {
             "com.breel.wallpapers20"
     };
 
-    private static final String[] packagesToKeep = {
-        PACKAGE_GMS,
-        "com.google.android.GoogleCamera",
-        "com.google.android.GoogleCamera.Cameight",
-        "com.google.android.GoogleCamera.Go",
-        "com.google.android.GoogleCamera.Urnyx",
-        "com.google.android.GoogleCameraAsp",
-        "com.google.android.GoogleCameraCVM",
-        "com.google.android.GoogleCameraEng",
-        "com.google.android.GoogleCameraEng2",
-        "com.google.android.MTCL83",
-        "com.google.android.UltraCVM",
-        "com.google.android.apps.cameralite",
-        "com.google.ar.core",
-        "com.google.android.apps.wearables.maestro.companion",
-        "com.google.android.apps.recorder"
-    };
-
-    // Codenames for currently supported Pixels by Google
-    private static final String[] pixelCodenames = {
-            "oriole",
-            "raven",
-            "redfin",
-            "barbet",
-            "bramble",
-            "sunfish",
-            "coral",
-            "flame"
-    };
-
     private static ArrayList<String> allProps = new ArrayList<>(Arrays.asList("BRAND", "MANUFACTURER", "DEVICE", "PRODUCT", "MODEL", "FINGERPRINT"));
 
     private static volatile boolean sIsGms = false;
@@ -96,6 +58,9 @@ public class PixelPropsUtils {
     static {
         propsToKeep = new HashMap<>();
         propsToKeep.put("com.google.android.settings.intelligence", new ArrayList<>(Collections.singletonList("FINGERPRINT")));
+        propsToKeep.put("com.google.android.GoogleCamera", allProps);
+        propsToKeep.put("com.google.android.dialer", allProps);
+        propsToKeep.put("com.google.ar.core", allProps);
         propsToChangePixel6 = new HashMap<>();
         propsToChangePixel6.put("BRAND", "google");
         propsToChangePixel6.put("MANUFACTURER", "Google");
@@ -119,37 +84,14 @@ public class PixelPropsUtils {
         propsToChangePixelXL.put("FINGERPRINT", "google/marlin/marlin:10/QP1A.191005.007.A3/5972272:user/release-keys");
     }
 
-    private static void setPropsForSamsung(String packageName) {
-        for (Map.Entry<String, Object> prop : propsToChangePixel6.entrySet()) {
-            String key = prop.getKey();
-            Object value = prop.getValue();
-            if (propsToKeep.containsKey(packageName) && propsToKeep.get(packageName).contains(key)) {
-                if (DEBUG) Log.d(TAG, "Not defining " + key + " prop for: " + packageName);
-                continue;
-            }
-            if (DEBUG) Log.d(TAG, "Defining " + key + " prop for: " + packageName);
-            setPropValue(key, value);
-        }
-    }
-
-    public static void setProps(Application app) {
-        final String packageName = app.getPackageName();
-        final String processName = app.getProcessName();
+    public static void setProps(String packageName) {
         if (packageName == null) {
             return;
         }
-        if (packageName.startsWith("com.samsung.android.")){
-            setPropsForSamsung(packageName);
-            return;
-        }
-        if (packageName.equals(PACKAGE_GMS) &&
-                processName.equals(PACKAGE_GMS + ".unstable")) {
+        if (packageName.equals(PACKAGE_GMS)) {
             sIsGms = true;
         }
-        boolean isPixelDevice = Arrays.asList(pixelCodenames).contains(SystemProperties.get(DEVICE));
-        if (!isPixelDevice &&
-            ((packageName.startsWith("com.google.") && !Arrays.asList(packagesToKeep).contains(packageName))
-                || Arrays.asList(extraPackagesToChange).contains(packageName))) {
+        if (packageName.startsWith("com.google.") || Arrays.asList(extraPackagesToChange).contains(packageName)) {
             Map<String, Object> propsToChange = propsToChangePixel6;
 
             if (Arrays.asList(packagesToChangePixel5).contains(packageName)) {
@@ -171,10 +113,6 @@ public class PixelPropsUtils {
                 if (DEBUG) Log.d(TAG, "Defining " + key + " prop for: " + packageName);
                 setPropValue(key, value);
             }
-        }
-        if (sIsGms) {
-                setPropValue("FINGERPRINT", "google/angler/angler:6.0/MDB08L/2343525:user/release-keys");
-                setPropValue("MODEL", "angler");
         }
         // Set proper indexing fingerprint
         if (packageName.equals("com.google.android.settings.intelligence")) {

@@ -1233,17 +1233,18 @@ public class Instrumentation {
         Application app = getFactory(context.getPackageName())
                 .instantiateApplication(cl, className);
         app.attach(context);
-        PixelPropsUtils.setProps(app);
+        String packageName = app.getPackageName();
+        PixelPropsUtils.setProps(packageName);
         return app;
     }
-    
+
     /**
      * Perform instantiation of the process's {@link Application} object.  The
      * default implementation provides the normal system behavior.
-     * 
+     *
      * @param clazz The class used to create an Application object from.
      * @param context The context to initialize the application with
-     * 
+     *
      * @return The newly instantiated Application object.
      */
     static public Application newApplication(Class<?> clazz, Context context)
@@ -1251,7 +1252,8 @@ public class Instrumentation {
             ClassNotFoundException {
         Application app = (Application)clazz.newInstance();
         app.attach(context);
-        PixelPropsUtils.setProps(app);
+        String packageName = app.getPackageName();
+        PixelPropsUtils.setProps(packageName);
         return app;
     }
 

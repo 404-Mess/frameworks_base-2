@@ -685,31 +685,6 @@ public class CentralSurfacesImpl extends CoreStartable implements
 
     private final InteractionJankMonitor mJankMonitor;
 
-    private class CustomSettingsObserver extends ContentObserver {
-        CustomSettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
-                    false, this, UserHandle.USER_ALL);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            update();
-        }
-
-        public void update() {
-            if (mNotificationShadeWindowViewController != null) {
-                mNotificationShadeWindowViewController.updateSettings();
-            }
-        }
-    }
-
-    private CustomSettingsObserver mCustomSettingsObserver;
-
     /**
      * Public constructor for CentralSurfaces.
      *
@@ -1151,10 +1126,6 @@ public class CentralSurfacesImpl extends CoreStartable implements
                 (requestTopUi, componentTag) -> mMainExecutor.execute(() ->
                         mNotificationShadeWindowController.setRequestTopUi(
                                 requestTopUi, componentTag))));
-
-        mCustomSettingsObserver = new CustomSettingsObserver(mMainHandler);
-        mCustomSettingsObserver.observe();
-        mCustomSettingsObserver.update();
     }
 
     private void onFoldedStateChanged(boolean isFolded, boolean willGoToSleep) {
@@ -2032,6 +2003,9 @@ public class CentralSurfacesImpl extends CoreStartable implements
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SHOW_LOCKSCREEN_MEDIA_ART),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE),
+                    false, this, UserHandle.USER_ALL);
         }
 
         @Override
@@ -2042,12 +2016,16 @@ public class CentralSurfacesImpl extends CoreStartable implements
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.SHOW_LOCKSCREEN_MEDIA_ART))) {
                 setLockScreenMediaArt();
-	    }
+	    } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_GESTURE))) {
+                setDoubleTapToSleepGesture();
+            }
         }
 
         public void update() {
             setLockScreenMediaBlurLevel();
             setLockScreenMediaArt();
+            setDoubleTapToSleepGesture();
         }
     }
 
@@ -2060,6 +2038,12 @@ public class CentralSurfacesImpl extends CoreStartable implements
     private void setLockScreenMediaArt() {
         if (mMediaManager != null) {
             mMediaManager.setLockScreenMediaArt();
+        }
+    }
+
+    private void setDoubleTapToSleepGesture() {
+        if (mNotificationShadeWindowViewController != null) {
+            mNotificationShadeWindowViewController.updateSettings();
         }
     }
 
